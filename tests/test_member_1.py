@@ -70,3 +70,33 @@ def test_blank_task_is_not_added(page: Page, task_text: str):
     task_input.press("Enter")
 
     expect(task_items).to_have_count(0)
+
+def test_login_with_correct_details(page: Page):
+    page.goto("https://the-internet.herokuapp.com/login")
+
+    page.get_by_label("Username").fill("tomsmith")
+    page.get_by_label("Password").fill("SuperSecretPassword!")
+    page.get_by_role("button", name="Login").click()
+
+    expect(
+        page.get_by_role(
+            "heading",
+            name="Secure Area",
+            exact=True,
+        )
+    ).to_be_visible()
+
+def test_login_with_incorrect_password(page: Page):
+    page.goto("https://the-internet.herokuapp.com/login")
+
+    page.get_by_label("Username").fill("tomsmith")
+    page.get_by_label("Password").fill("WrongPassword123")
+    page.get_by_role("button", name="Login").click()
+
+    expect(
+        page.get_by_text("Your password is invalid!")
+    ).to_be_visible()
+
+    expect(
+        page.get_by_role("button", name="Login")
+    ).to_be_visible()
